@@ -11,4 +11,6 @@
     <string name="application_name_exo_player">RecipeStepsVideos</string>
     <string name="parcel_step">step</string>
     <string name="selected_position">SELECTED_POSITION</string>
+
+    <string name="menu_step">menu_step</string>
 </resources>

@@ -10,9 +10,21 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.example.android.mybakingapp.R;
 import com.example.android.mybakingapp.data.RecipesIdlingResources;
+import com.example.android.mybakingapp.data.model.Recipe;
+import com.example.android.mybakingapp.util.Client;
+import com.example.android.mybakingapp.util.CommonUtils;
+import com.example.android.mybakingapp.util.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
 public class RecipeActivity extends AppCompatActivity {
@@ -35,24 +47,56 @@ public class RecipeActivity extends AppCompatActivity {
     private static final String LOG_TAG = RecipeActivity.class.getName();
     public static final String TAG_FRAGMENT = "FaridsRecipe";
 
+    Call<List<Recipe>> mRecipeCall;
+    private List<Recipe> mRecipes = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe);
-        Toolbar menuToolbar = (Toolbar) findViewById(R.id.menu_toolbar);
+
+        Toolbar menuToolbar = findViewById(R.id.menu_toolbar);
         setSupportActionBar(menuToolbar);
         getSupportActionBar().setTitle(getString(R.string.menu_title));
 
-        RecipeFragment frag = new RecipeFragment();
+        getRecipes();
+
+        RecipeFragment frag = RecipeFragment.newInstance((ArrayList<Recipe>) mRecipes);
         FragmentManager fragmentManager = getSupportFragmentManager();
         if (fragmentManager.findFragmentByTag(TAG_FRAGMENT) == null) {
             FragmentTransaction transaction = fragmentManager.beginTransaction();
             transaction.add(R.id.recipe_view, frag, TAG_FRAGMENT);
             transaction.commit();
         }
-        //todo check if fragment is already added to fragment manager before adding.
+
         Log.d(LOG_TAG, "onCreate executed");
 
+
         getIdlingResource();
+    }
+
+    private void getRecipes() {
+        Service apiService =
+                Client.getClient().create(Service.class);
+        mRecipeCall = apiService.getDetails();
+        mRecipeCall.enqueue(new Callback<List<Recipe>>() {
+            @Override
+            public void onResponse(Call<List<Recipe>> call, Response<List<Recipe>> response) {
+                if (response.isSuccessful()) {
+                    mRecipes.addAll(response.body());
+                    //Log.d(LOG_TAG, "" + mRecipes.addAll(response.body()));
+
+                } else {
+                    CommonUtils apiError = CommonUtils.parseError(response);
+                    Toast.makeText(RecipeActivity.this, apiError.getMessage(),
+                            Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Recipe>> call, Throwable t) {
+                Log.d("Error", t.getMessage());
+            }
+        });
     }
 }

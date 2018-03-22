@@ -1,9 +1,7 @@
 package com.example.android.mybakingapp.ui.video_content;
 
-import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
@@ -12,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -37,13 +36,14 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 import com.squareup.picasso.Picasso;
 
-import java.net.URLConnection;
+import java.util.ArrayList;
 
 
 public class VideoFragment extends Fragment implements ExoPlayer.EventListener {
 
     private static final String TAG = VideoFragment.class.getSimpleName();
-    public static final String EXTRA_STEP = "step";
+    public static final String POSITION_STEP = "position_string";
+    public static final String EXTRA_STEPS = "extra_steps";
 
     private SimpleExoPlayer mExoplayer;
     private MediaSessionCompat mMediaSession;
@@ -53,6 +53,10 @@ public class VideoFragment extends Fragment implements ExoPlayer.EventListener {
     private TextView mDescription;
     private ImageView mThumbnail;
 
+    public ImageButton backButton, forwardButton;
+    private int mSelectedIndex;
+    private ArrayList<Step> mSteps;
+
     private Uri mVideoUri;
     private long mPosition;
 
@@ -60,39 +64,85 @@ public class VideoFragment extends Fragment implements ExoPlayer.EventListener {
         // Required empty public constructor
     }
 
-    public static VideoFragment newInstance(Step step) {
+    public static VideoFragment newInstance(int selectedIndex, ArrayList<Step> steps) {
         Bundle args = new Bundle();
-        args.putParcelable(EXTRA_STEP, step);
+        args.putInt(POSITION_STEP, selectedIndex);
+        args.putParcelableArrayList(EXTRA_STEPS, steps);
         VideoFragment fragment = new VideoFragment();
         fragment.setArguments(args);
         return fragment;
     }
 
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_video, container, false);
+        if (savedInstanceState != null) {
+            mPosition = savedInstanceState.getLong(getResources().getString(R.string.selected_position));
+        }
+
+        View rootView = inflater.inflate(R.layout.fragment_video, container, false);
+        mSteps = getArguments().getParcelableArrayList(EXTRA_STEPS);
+        mSelectedIndex = getArguments().getInt(POSITION_STEP);
+
+        mDescription = rootView.findViewById(R.id.step_description_text_view);
+        mThumbnail = rootView.findViewById(R.id.placeholder_no_video_image);
+        mExoplayerView = rootView.findViewById(R.id.video_view_recipe);
+
+        playVideo(mSelectedIndex);
+
+        backButton = rootView.findViewById(R.id.btn_back);
+        forwardButton = rootView.findViewById(R.id.btn_frw);
+
+        backButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                if (mSteps.get(mSelectedIndex).getId() > 0) {
+                    if (mExoplayer != null) {
+                        mExoplayer.stop();
+                    }
+                    mSelectedIndex--;
+                    playVideo(mSelectedIndex);
+                } else {
+                    Toast.makeText(getActivity(), "You already are in the First step of the recipe", Toast.LENGTH_SHORT).show();
+
+                }
+            }
+        });
+
+        forwardButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+
+                int lastIndex = mSteps.size() - 1;
+                if (mSteps.get(mSelectedIndex).getId() < mSteps.get(lastIndex).getId()) {
+                    if (mExoplayer != null) {
+                        mExoplayer.stop();
+                        mSelectedIndex++;
+                    }
+                    playVideo(mSteps.get(mSelectedIndex).getId());
+                } else {
+                    Toast.makeText(getContext(), "You already are in the Last step of the recipe", Toast.LENGTH_SHORT).show();
+
+                }
+            }
+        });
+
+
+        return rootView;
     }
 
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        Step step = getArguments().getParcelable(EXTRA_STEP);
+    public void setVideo(ArrayList<Step> steps) {
+        mSteps = steps;
+    }
+
+    private void playVideo(int position) {
+        mPosition = position;
+        Step step = mSteps.get(mSelectedIndex);
         String videoUrl = step.getVideoURL();
         if (TextUtils.isEmpty(videoUrl)) {
             videoUrl = step.getThumbnailURL();
         }
         mVideoUri = Uri.parse(step.getVideoURL());
-
-        mDescription = view.findViewById(R.id.step_description_text_view);
-        mThumbnail = view.findViewById(R.id.placeholder_no_video_image);
-        mExoplayerView = view.findViewById(R.id.video_view_recipe);
-
         mDescription.setText(step.getDescription());
-
-        if (savedInstanceState != null) {
-            mPosition = savedInstanceState.getLong(getResources().getString(R.string.selected_position));
-        }
 
         if (TextUtils.isEmpty(videoUrl)) {
             mThumbnail.setVisibility(View.VISIBLE);
@@ -104,11 +154,6 @@ public class VideoFragment extends Fragment implements ExoPlayer.EventListener {
             mExoplayerView.setVisibility(View.VISIBLE);
             initializeVideoPlayer(Uri.parse(videoUrl));
         }
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            mExoplayerView.getLayoutParams().height = ViewGroup.LayoutParams.MATCH_PARENT;
-            mExoplayerView.getLayoutParams().width = ViewGroup.LayoutParams.MATCH_PARENT;
-            mDescription.setVisibility(View.GONE);
-        }
     }
 
     @Override
@@ -117,10 +162,10 @@ public class VideoFragment extends Fragment implements ExoPlayer.EventListener {
         outState.putLong(getResources().getString(R.string.selected_position), mPosition);
     }
 
-    public static boolean isVideoFile(String path) {
-        String mimeType = URLConnection.guessContentTypeFromName(path);
-        return mimeType != null && mimeType.startsWith("video");
-    }
+//    public static boolean isVideoFile(String path) {
+//        String mimeType = URLConnection.guessContentTypeFromName(path);
+//        return mimeType != null && mimeType.startsWith("video");
+//    }
 
     @Override
     public void onResume() {
@@ -182,22 +227,20 @@ public class VideoFragment extends Fragment implements ExoPlayer.EventListener {
 
     private void initializeVideoPlayer(Uri videoUri) {
         initializeMediaSession();
-        if (mExoplayer == null) {
-            TrackSelector trackSelector = new DefaultTrackSelector();
-            LoadControl loadControl = new DefaultLoadControl();
-            mExoplayer = ExoPlayerFactory.newSimpleInstance(getContext(), trackSelector, loadControl);
-            mExoplayerView.setPlayer(mExoplayer);
-            mExoplayer.addListener(this);
+        TrackSelector trackSelector = new DefaultTrackSelector();
+        LoadControl loadControl = new DefaultLoadControl();
+        mExoplayer = ExoPlayerFactory.newSimpleInstance(getContext(), trackSelector, loadControl);
+        mExoplayerView.setPlayer(mExoplayer);
+        mExoplayer.addListener(this);
 
-            String userAgent = Util.getUserAgent(getContext(), "StepVideo");
-            MediaSource mediaSource = new ExtractorMediaSource(videoUri,
-                    new DefaultDataSourceFactory(getContext(), userAgent),
-                    new DefaultExtractorsFactory(),
-                    null,
-                    null);
-            mExoplayer.prepare(mediaSource);
-            mExoplayer.setPlayWhenReady(true);
-        }
+        String userAgent = Util.getUserAgent(getContext(), "StepVideo");
+        MediaSource mediaSource = new ExtractorMediaSource(videoUri,
+                new DefaultDataSourceFactory(getContext(), userAgent),
+                new DefaultExtractorsFactory(),
+                null,
+                null);
+        mExoplayer.prepare(mediaSource);
+        mExoplayer.setPlayWhenReady(true);
     }
 
     private void releasePlayer() {
@@ -210,6 +253,7 @@ public class VideoFragment extends Fragment implements ExoPlayer.EventListener {
         if (mMediaSession != null) {
             mMediaSession.setActive(false);
         }
+        Log.d(TAG, "player initialized");
     }
 
     @Override

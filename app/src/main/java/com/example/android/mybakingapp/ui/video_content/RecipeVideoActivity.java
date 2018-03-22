@@ -9,9 +9,11 @@ import android.view.MenuItem;
 import com.example.android.mybakingapp.R;
 import com.example.android.mybakingapp.data.model.Step;
 
+import java.util.ArrayList;
+
 public class RecipeVideoActivity extends AppCompatActivity {
     private static final String TAG = RecipeVideoActivity.class.getSimpleName();
-    private static final String TAG_FRAGMENT_VIDEO = "video fragment";
+    public static final String TAG_FRAGMENT_VIDEO = "video fragment";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,11 +28,14 @@ public class RecipeVideoActivity extends AppCompatActivity {
         FragmentManager fragmentManager = getSupportFragmentManager();
         if (fragmentManager.findFragmentByTag(TAG_FRAGMENT_VIDEO) == null) {
             FragmentTransaction transaction = fragmentManager.beginTransaction();
-            Step step = getIntent().getParcelableExtra(VideoFragment.EXTRA_STEP);
-            VideoFragment videoFragment = VideoFragment.newInstance(step);
+            ArrayList<Step> steps = getIntent().getParcelableArrayListExtra(VideoFragment.EXTRA_STEPS);
+            int selectedIndex = getIntent().getIntExtra(VideoFragment.POSITION_STEP, 0);
+            VideoFragment videoFragment = VideoFragment.newInstance(selectedIndex, steps);
             transaction.add(R.id.recipe_video, videoFragment, TAG_FRAGMENT_VIDEO);
             transaction.commit();
         }
+
+
     }
 
     @Override

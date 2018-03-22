@@ -1,12 +1,12 @@
 package com.example.android.mybakingapp.adapter;
 
 import android.content.Context;
-import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.android.mybakingapp.R;
@@ -44,9 +44,32 @@ public class RecipeMenuAdapter extends RecyclerView.Adapter<RecipeMenuAdapter.My
     public void onBindViewHolder(MyViewHolder holder, final int position) {
         Recipe clickedDataItem = recipeList.get(position);
         holder.recipeName.setText(clickedDataItem.recipeName);
+
         String imageUrl = recipeList.get(position).image;
-        if (!imageUrl.equals("")) {
-            //Load image if present
+
+        if (imageUrl != null && imageUrl.isEmpty())
+        {
+            switch (position)
+            {
+                //Nutella Pie
+                case 0:
+                    Picasso.with(mContext).load(R.drawable.nutellapie).into(holder.thumbnail);
+                    break;
+                //Brownies
+                case 1:
+                    Picasso.with(mContext).load(R.drawable.brownis).into(holder.thumbnail);
+                    break;
+                //Yellow Cake
+                case 2:
+                    Picasso.with(mContext).load(R.drawable.yellow_cake).into(holder.thumbnail);
+                    break;
+                //cheesecake
+                case 3:
+                    Picasso.with(mContext).load(R.drawable.cheesecake).into(holder.thumbnail);
+                    break;
+            }
+        } else
+        {
             Picasso.with(mContext).load(imageUrl).into(holder.thumbnail);
         }
     }
@@ -58,7 +81,6 @@ public class RecipeMenuAdapter extends RecyclerView.Adapter<RecipeMenuAdapter.My
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
-
         @BindView(R.id.recipe_name)
         TextView recipeName;
 
@@ -66,7 +88,7 @@ public class RecipeMenuAdapter extends RecyclerView.Adapter<RecipeMenuAdapter.My
         CardView cardView;
 
         @BindView(R.id.recipe_thumbnail)
-        AppCompatImageView thumbnail;
+        ImageView thumbnail;
 
         public MyViewHolder(View itemView) {
             super(itemView);
