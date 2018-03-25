@@ -84,6 +84,8 @@ public class RecipeMenuAdapter extends RecyclerView.Adapter<RecipeMenuAdapter.My
         @BindView(R.id.recipe_name)
         TextView recipeName;
 
+        @BindView(R.id.gradient)
+        View myView;
         @BindView(R.id.card_view)
         CardView cardView;
 

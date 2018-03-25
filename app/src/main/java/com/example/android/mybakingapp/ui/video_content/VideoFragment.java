@@ -34,7 +34,6 @@ import com.google.android.exoplayer2.trackselection.TrackSelector;
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -59,6 +58,7 @@ public class VideoFragment extends Fragment implements ExoPlayer.EventListener {
 
     private Uri mVideoUri;
     private long mPosition;
+    private Step mStep;
 
     public VideoFragment() {
         // Required empty public constructor
@@ -77,31 +77,46 @@ public class VideoFragment extends Fragment implements ExoPlayer.EventListener {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        if (savedInstanceState != null) {
-            mPosition = savedInstanceState.getLong(getResources().getString(R.string.selected_position));
-        }
-
         View rootView = inflater.inflate(R.layout.fragment_video, container, false);
+
+        if (savedInstanceState != null) {
+            mSelectedIndex = savedInstanceState.getInt("farid");
+            mPosition = savedInstanceState.getLong( "farid2");
+        }else {
+            mSelectedIndex = getArguments().getInt(POSITION_STEP);
+        }
         mSteps = getArguments().getParcelableArrayList(EXTRA_STEPS);
-        mSelectedIndex = getArguments().getInt(POSITION_STEP);
+        mStep = mSteps.get(mSelectedIndex);
 
         mDescription = rootView.findViewById(R.id.step_description_text_view);
         mThumbnail = rootView.findViewById(R.id.placeholder_no_video_image);
         mExoplayerView = rootView.findViewById(R.id.video_view_recipe);
 
-        playVideo(mSelectedIndex);
+        playVideo();
 
         backButton = rootView.findViewById(R.id.btn_back);
         forwardButton = rootView.findViewById(R.id.btn_frw);
 
+        if(mSteps.get(mSelectedIndex).getId() == 0){
+            backButton.setVisibility(View.GONE);
+        }
+        if(mSteps.get(mSelectedIndex).getId() == mSteps.size() - 1){
+            forwardButton.setVisibility(View.GONE);
+        }
+
         backButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
+                if(mSteps.get(mSelectedIndex).getId() == 0){
+                    backButton.setVisibility(View.GONE);
+                }
                 if (mSteps.get(mSelectedIndex).getId() > 0) {
+                    backButton.setVisibility(View.VISIBLE);
+                    forwardButton.setVisibility(View.VISIBLE);
                     if (mExoplayer != null) {
                         mExoplayer.stop();
                     }
                     mSelectedIndex--;
-                    playVideo(mSelectedIndex);
+                    playVideo();
                 } else {
                     Toast.makeText(getActivity(), "You already are in the First step of the recipe", Toast.LENGTH_SHORT).show();
 
@@ -111,14 +126,18 @@ public class VideoFragment extends Fragment implements ExoPlayer.EventListener {
 
         forwardButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-
                 int lastIndex = mSteps.size() - 1;
+                if(mSteps.get(mSelectedIndex).getId() == mSteps.size() - 1){
+                    forwardButton.setVisibility(View.GONE);
+                }
                 if (mSteps.get(mSelectedIndex).getId() < mSteps.get(lastIndex).getId()) {
+                    forwardButton.setVisibility(View.VISIBLE);
+                    backButton.setVisibility(View.VISIBLE);
                     if (mExoplayer != null) {
                         mExoplayer.stop();
                         mSelectedIndex++;
                     }
-                    playVideo(mSteps.get(mSelectedIndex).getId());
+                    playVideo();
                 } else {
                     Toast.makeText(getContext(), "You already are in the Last step of the recipe", Toast.LENGTH_SHORT).show();
 
@@ -134,23 +153,21 @@ public class VideoFragment extends Fragment implements ExoPlayer.EventListener {
         mSteps = steps;
     }
 
-    private void playVideo(int position) {
-        mPosition = position;
-        Step step = mSteps.get(mSelectedIndex);
-        String videoUrl = step.getVideoURL();
+    private void playVideo() {
+        mStep = mSteps.get(mSelectedIndex);
+        String videoUrl = mStep.getVideoURL();
         if (TextUtils.isEmpty(videoUrl)) {
-            videoUrl = step.getThumbnailURL();
+            videoUrl = mStep.getThumbnailURL();
         }
-        mVideoUri = Uri.parse(step.getVideoURL());
-        mDescription.setText(step.getDescription());
+        mVideoUri = Uri.parse(mStep.getVideoURL());
+        mDescription.setText(mStep.getDescription());
 
-        if (TextUtils.isEmpty(videoUrl)) {
+        if (TextUtils.isEmpty(videoUrl) && videoUrl.equals("")) {
             mThumbnail.setVisibility(View.VISIBLE);
-            Picasso.with(getContext())
-                    .load(R.drawable.no_video)
-                    .into(mThumbnail);
+            mThumbnail.setImageResource(R.drawable.no_video);
             mExoplayerView.setVisibility(View.GONE);
         } else {
+            mThumbnail.setVisibility(View.GONE);
             mExoplayerView.setVisibility(View.VISIBLE);
             initializeVideoPlayer(Uri.parse(videoUrl));
         }
@@ -159,7 +176,8 @@ public class VideoFragment extends Fragment implements ExoPlayer.EventListener {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putLong(getResources().getString(R.string.selected_position), mPosition);
+        outState.putLong("farid2", mPosition);
+        outState.putInt("farid" , mSelectedIndex);
     }
 
 //    public static boolean isVideoFile(String path) {
@@ -179,6 +197,7 @@ public class VideoFragment extends Fragment implements ExoPlayer.EventListener {
         }
     }
 
+
     @Override
     public void onPause() {
         super.onPause();
@@ -194,6 +213,7 @@ public class VideoFragment extends Fragment implements ExoPlayer.EventListener {
     public void onDestroy() {
         super.onDestroy();
         releasePlayer();
+        mExoplayer = null;
     }
 
     private void initializeMediaSession() {

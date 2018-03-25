@@ -29,9 +29,8 @@ public class RecipeIngredientAdapter extends RecyclerView.Adapter<RecipeIngredie
 
     @Override
     public MyIngredientViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        Context context = parent.getContext();
-        int layoutIdForRecipeCardItem = R.layout.card_view_two;
-        LayoutInflater inflater = LayoutInflater.from(context);
+        int layoutIdForRecipeCardItem = R.layout.card_layout_ingredient;
+        LayoutInflater inflater = LayoutInflater.from(mContext);
         boolean shouldAttachToParentImmediately = false;
         View view = inflater.inflate(layoutIdForRecipeCardItem, parent, shouldAttachToParentImmediately);
         return new MyIngredientViewHolder(view);
@@ -41,6 +40,8 @@ public class RecipeIngredientAdapter extends RecyclerView.Adapter<RecipeIngredie
     public void onBindViewHolder(MyIngredientViewHolder holder, int position) {
         Ingredient ingredientItem = mIngredientsList.get(position);
         holder.ingredients.setText(ingredientItem.getIngredient());
+        holder.measure.setText(ingredientItem.getMeasure());
+        holder.quantity.setText(String.valueOf(ingredientItem.getQuantity()));
 
     }
 
@@ -51,8 +52,14 @@ public class RecipeIngredientAdapter extends RecyclerView.Adapter<RecipeIngredie
 
     public class MyIngredientViewHolder extends RecyclerView.ViewHolder{
 
-        @BindView(R.id.step_name)
+        @BindView(R.id.ingredient_name)
         TextView ingredients;
+
+        @BindView(R.id.measure)
+        TextView measure;
+
+        @BindView(R.id.quantity)
+        TextView quantity;
 
         public MyIngredientViewHolder(View itemView) {
             super(itemView);
