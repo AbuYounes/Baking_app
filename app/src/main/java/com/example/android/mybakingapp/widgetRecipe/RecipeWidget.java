@@ -34,8 +34,13 @@ public class RecipeWidget extends AppWidgetProvider {
 
         // Create an Intent to launch ExampleActivity
         Intent showActiviyIntent = new Intent(context, RecipeActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, showActiviyIntent, 0);
+//        showActiviyIntent.setAction(MyIngredientService.FROM_ACTIVITY_INGREDIENTS_LIST);
+//        showActiviyIntent.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, showActiviyIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         views.setOnClickPendingIntent(R.id.back_button, pendingIntent);
+        //views.setPendingIntentTemplate(R.id.listview_widget, pendingIntent);
+
+        appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.listview_widget);
 
         // Instruct the widget manager to update the widget
         appWidgetManager.updateAppWidget(appWidgetId, views);
@@ -45,6 +50,9 @@ public class RecipeWidget extends AppWidgetProvider {
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
 
         MyIngredientService.startIngredientService(context, ingredientsList);
+//        for(int i = 0; i< appWidgetIds.length; i++) {
+//            appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds[i], R.id.listview_widget);
+//        }
     }
 
     public static void updateBakingWidgets(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {

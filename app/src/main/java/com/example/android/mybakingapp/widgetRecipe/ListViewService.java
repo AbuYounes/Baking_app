@@ -64,7 +64,6 @@ public class ListViewService extends RemoteViewsService {
             views.setOnClickFillInIntent(R.id.ingredient_name_text_view, fillInIntent);
 
             return views;
-
         }
 
         @Override

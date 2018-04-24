@@ -6,9 +6,10 @@
 
             <TextView
                 android:id="@+id/ingredient_name_text_view"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="2dp"
+                android:layout_gravity="center_horizontal"
                 android:textColor="@android:color/white"
                 android:textSize="18sp"
                 android:textStyle="bold" />

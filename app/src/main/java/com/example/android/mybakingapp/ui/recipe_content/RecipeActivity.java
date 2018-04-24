@@ -69,10 +69,8 @@ public class RecipeActivity extends AppCompatActivity {
             transaction.commit();
         }
 
-        getRecipes();
-
         Log.d(LOG_TAG, "onCreate executed");
-
+        getRecipes();
 
         getIdlingResource();
     }
