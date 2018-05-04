@@ -18,14 +18,14 @@ public class ListViewService extends RemoteViewsService {
 
     @Override
     public RemoteViewsFactory onGetViewFactory(Intent intent) {
-        return new ListRemoteViewsFactory(this.getApplicationContext(), intent);
+        return new ListRemoteViewsFactory(this.getApplicationContext());
     }
 
     class ListRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 
         Context mContext;
 
-        public ListRemoteViewsFactory(Context applicationContext, Intent intent) {
+        public ListRemoteViewsFactory(Context applicationContext) {
             this.mContext = applicationContext;
         }
 

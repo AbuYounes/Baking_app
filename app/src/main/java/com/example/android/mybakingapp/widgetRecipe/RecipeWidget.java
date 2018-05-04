@@ -6,12 +6,15 @@ import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.widget.RemoteViews;
 
 import com.example.android.mybakingapp.R;
 import com.example.android.mybakingapp.ui.recipe_content.RecipeActivity;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 import static com.example.android.mybakingapp.widgetRecipe.MyIngredientService.FROM_ACTIVITY_INGREDIENTS_LIST;
 
@@ -34,8 +37,8 @@ public class RecipeWidget extends AppWidgetProvider {
 
         // Create an Intent to launch ExampleActivity
         Intent showActiviyIntent = new Intent(context, RecipeActivity.class);
-//        showActiviyIntent.setAction(MyIngredientService.FROM_ACTIVITY_INGREDIENTS_LIST);
-//        showActiviyIntent.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
+        showActiviyIntent.setAction(MyIngredientService.FROM_ACTIVITY_INGREDIENTS_LIST);
+        showActiviyIntent.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, showActiviyIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         views.setOnClickPendingIntent(R.id.back_button, pendingIntent);
         //views.setPendingIntentTemplate(R.id.listview_widget, pendingIntent);
@@ -50,9 +53,9 @@ public class RecipeWidget extends AppWidgetProvider {
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
 
         MyIngredientService.startIngredientService(context, ingredientsList);
-//        for(int i = 0; i< appWidgetIds.length; i++) {
-//            appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds[i], R.id.listview_widget);
-//        }
+        for (int appWidgetId : appWidgetIds) {
+            appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.listview_widget);
+        }
     }
 
     public static void updateBakingWidgets(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
@@ -71,19 +74,21 @@ public class RecipeWidget extends AppWidgetProvider {
         // Enter relevant functionality for when the last widget is disabled
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     public void onReceive(Context context, Intent intent) {
+        super.onReceive(context, intent);
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
         int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(context, RecipeWidget.class));
 
         final String action = intent.getAction();
 
         if (action.equals("android.appwidget.action.APPWIDGET_UPDATE")) {
-            ingredientsList = intent.getExtras().getStringArrayList(FROM_ACTIVITY_INGREDIENTS_LIST);
+            ingredientsList = Objects.requireNonNull(intent.getExtras()).getStringArrayList(FROM_ACTIVITY_INGREDIENTS_LIST);
             appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.listview_widget);
 
             RecipeWidget.updateBakingWidgets(context, appWidgetManager, appWidgetIds);
-            super.onReceive(context, intent);
+
         }
     }
 }

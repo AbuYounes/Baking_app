@@ -3,8 +3,11 @@ package com.example.android.mybakingapp.widgetRecipe;
 import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 
 public class MyIngredientService extends IntentService {
@@ -23,13 +26,13 @@ public class MyIngredientService extends IntentService {
     }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     protected void onHandleIntent(Intent intent) {
         if (intent != null) {
-                ArrayList<String> fromActivityIngredientsList = intent.getExtras().getStringArrayList(FROM_ACTIVITY_INGREDIENTS_LIST);
+                ArrayList<String> fromActivityIngredientsList = Objects.requireNonNull(intent.getExtras()).getStringArrayList(FROM_ACTIVITY_INGREDIENTS_LIST);
                 handleActionShowIngredients(fromActivityIngredientsList);
             }
-
     }
 
     private void handleActionShowIngredients(ArrayList<String> fromActivityIngredientsList) {

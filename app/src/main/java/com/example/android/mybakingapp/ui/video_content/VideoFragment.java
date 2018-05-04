@@ -43,6 +43,8 @@ public class VideoFragment extends Fragment implements ExoPlayer.EventListener {
     private static final String TAG = VideoFragment.class.getSimpleName();
     public static final String POSITION_STEP = "position_string";
     public static final String EXTRA_STEPS = "extra_steps";
+    private static final String EXTRA_SELECTED_INDEX = "selected_index";
+    private static final String EXTRA_POSITION = "position";
 
     private SimpleExoPlayer mExoplayer;
     private MediaSessionCompat mMediaSession;
@@ -80,8 +82,8 @@ public class VideoFragment extends Fragment implements ExoPlayer.EventListener {
         View rootView = inflater.inflate(R.layout.fragment_video, container, false);
 
         if (savedInstanceState != null) {
-            mSelectedIndex = savedInstanceState.getInt("farid");
-            mPosition = savedInstanceState.getLong( "farid2");
+            mSelectedIndex = savedInstanceState.getInt(EXTRA_SELECTED_INDEX);
+            mPosition = savedInstanceState.getLong( EXTRA_POSITION);
         }else {
             mSelectedIndex = getArguments().getInt(POSITION_STEP);
         }
@@ -176,8 +178,8 @@ public class VideoFragment extends Fragment implements ExoPlayer.EventListener {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putLong("farid2", mPosition);
-        outState.putInt("farid" , mSelectedIndex);
+        outState.putLong(EXTRA_POSITION, mPosition);
+        outState.putInt(EXTRA_SELECTED_INDEX , mSelectedIndex);
     }
 
 //    public static boolean isVideoFile(String path) {

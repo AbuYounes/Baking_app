@@ -59,18 +59,20 @@ public class RecipeActivity extends AppCompatActivity {
         setSupportActionBar(menuToolbar);
         getSupportActionBar().setTitle(getString(R.string.menu_title));
 
+        getRecipes();
 
-
-        RecipeFragment frag = RecipeFragment.newInstance((ArrayList<Recipe>) mRecipes);
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        if (fragmentManager.findFragmentByTag(TAG_FRAGMENT) == null) {
-            FragmentTransaction transaction = fragmentManager.beginTransaction();
-            transaction.add(R.id.recipe_view, frag, TAG_FRAGMENT);
-            transaction.commit();
+        if (mRecipes != null) {
+            RecipeFragment frag = RecipeFragment.newInstance((ArrayList<Recipe>) mRecipes);
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            if (fragmentManager.findFragmentByTag(TAG_FRAGMENT) == null) {
+                FragmentTransaction transaction = fragmentManager.beginTransaction();
+                transaction.add(R.id.recipe_view, frag, TAG_FRAGMENT);
+                transaction.commit();
+            }
         }
 
         Log.d(LOG_TAG, "onCreate executed");
-        getRecipes();
+
 
         getIdlingResource();
     }

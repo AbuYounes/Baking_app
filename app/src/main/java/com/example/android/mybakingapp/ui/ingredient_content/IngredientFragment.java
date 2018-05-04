@@ -60,7 +60,7 @@ public class IngredientFragment extends Fragment {
             recipeIngredientForWidgets.add(ingredientName + "\n" + "Quantity: " + quantity + "\n" + "Measure: " + measure + "\n");
         }
 
-        MyIngredientService.startIngredientService(getContext(), recipeIngredientForWidgets);
+        MyIngredientService.startIngredientService(getActivity(), recipeIngredientForWidgets);
         // Inflate the layout for this fragment
         return rootView;
     }

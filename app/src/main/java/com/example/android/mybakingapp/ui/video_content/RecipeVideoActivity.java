@@ -15,6 +15,9 @@ public class RecipeVideoActivity extends AppCompatActivity {
     private static final String TAG = RecipeVideoActivity.class.getSimpleName();
     public static final String TAG_FRAGMENT_VIDEO = "video fragment";
 
+    int mSelectedIndex;
+    ArrayList<Step> mSteps;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,14 +31,12 @@ public class RecipeVideoActivity extends AppCompatActivity {
         FragmentManager fragmentManager = getSupportFragmentManager();
         if (fragmentManager.findFragmentByTag(TAG_FRAGMENT_VIDEO) == null) {
             FragmentTransaction transaction = fragmentManager.beginTransaction();
-            ArrayList<Step> steps = getIntent().getParcelableArrayListExtra(VideoFragment.EXTRA_STEPS);
-            int selectedIndex = getIntent().getIntExtra(VideoFragment.POSITION_STEP, 0);
-            VideoFragment videoFragment = VideoFragment.newInstance(selectedIndex, steps);
+            mSteps = getIntent().getParcelableArrayListExtra(VideoFragment.EXTRA_STEPS);
+            mSelectedIndex = getIntent().getIntExtra(VideoFragment.POSITION_STEP, 0);
+            VideoFragment videoFragment = VideoFragment.newInstance(mSelectedIndex, mSteps);
             transaction.add(R.id.recipe_video, videoFragment, TAG_FRAGMENT_VIDEO);
             transaction.commit();
         }
-
-
     }
 
     @Override

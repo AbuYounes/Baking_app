@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 
@@ -23,7 +22,6 @@ public class RecipeStepActivity extends AppCompatActivity implements StepFragmen
     private static final String LOG_TAG = RecipeStepActivity.class.getName();
     public static final String TAG_FRAGMENT_STEP = "recipe step";
     public static final String RECIPE ="recipe";
-    private CardView mCardView;
     public boolean mTwoPane;
     Recipe mRecipe;
 
