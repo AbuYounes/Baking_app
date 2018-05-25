@@ -83,72 +83,63 @@ public class VideoFragment extends Fragment implements ExoPlayer.EventListener {
 
         if (savedInstanceState != null) {
             mSelectedIndex = savedInstanceState.getInt(EXTRA_SELECTED_INDEX);
-            mPosition = savedInstanceState.getLong( EXTRA_POSITION);
-        }else {
+            mPosition = savedInstanceState.getLong(EXTRA_POSITION);
+        } else {
             mSelectedIndex = getArguments().getInt(POSITION_STEP);
         }
         mSteps = getArguments().getParcelableArrayList(EXTRA_STEPS);
         mStep = mSteps.get(mSelectedIndex);
 
-        mDescription = rootView.findViewById(R.id.step_description_text_view);
-        mThumbnail = rootView.findViewById(R.id.placeholder_no_video_image);
-        mExoplayerView = rootView.findViewById(R.id.video_view_recipe);
+        initViews(rootView);
 
         playVideo();
 
+        return rootView;
+    }
+
+    private void initViews(View rootView) {
+        mDescription = rootView.findViewById(R.id.step_description_text_view);
+        mThumbnail = rootView.findViewById(R.id.placeholder_no_video_image);
+        mExoplayerView = rootView.findViewById(R.id.video_view_recipe);
         backButton = rootView.findViewById(R.id.btn_back);
         forwardButton = rootView.findViewById(R.id.btn_frw);
 
-        if(mSteps.get(mSelectedIndex).getId() == 0){
-            backButton.setVisibility(View.GONE);
-        }
-        if(mSteps.get(mSelectedIndex).getId() == mSteps.size() - 1){
-            forwardButton.setVisibility(View.GONE);
-        }
-
         backButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                if(mSteps.get(mSelectedIndex).getId() == 0){
-                    backButton.setVisibility(View.GONE);
-                }
-                if (mSteps.get(mSelectedIndex).getId() > 0) {
-                    backButton.setVisibility(View.VISIBLE);
-                    forwardButton.setVisibility(View.VISIBLE);
+                if (mSelectedIndex > 0) {
+                    mSelectedIndex--;
                     if (mExoplayer != null) {
                         mExoplayer.stop();
                     }
-                    mSelectedIndex--;
                     playVideo();
-                } else {
-                    Toast.makeText(getActivity(), "You already are in the First step of the recipe", Toast.LENGTH_SHORT).show();
-
+                    updateButtonVisibillity();
                 }
             }
         });
 
         forwardButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                int lastIndex = mSteps.size() - 1;
-                if(mSteps.get(mSelectedIndex).getId() == mSteps.size() - 1){
-                    forwardButton.setVisibility(View.GONE);
-                }
-                if (mSteps.get(mSelectedIndex).getId() < mSteps.get(lastIndex).getId()) {
-                    forwardButton.setVisibility(View.VISIBLE);
-                    backButton.setVisibility(View.VISIBLE);
+                if (mSelectedIndex < mSteps.size() - 1) {
+                    mSelectedIndex++;
                     if (mExoplayer != null) {
                         mExoplayer.stop();
-                        mSelectedIndex++;
                     }
+                    updateButtonVisibillity();
                     playVideo();
-                } else {
-                    Toast.makeText(getContext(), "You already are in the Last step of the recipe", Toast.LENGTH_SHORT).show();
-
                 }
             }
         });
+    }
 
-
-        return rootView;
+    private void updateButtonVisibillity() {
+        if (mSelectedIndex == 0) {
+            backButton.setVisibility(View.GONE);
+        } else if (mSelectedIndex >= mSteps.size() - 1) {
+            forwardButton.setVisibility(View.GONE);
+        } else {
+            backButton.setVisibility(View.VISIBLE);
+            forwardButton.setVisibility(View.VISIBLE);
+        }
     }
 
     public void setVideo(ArrayList<Step> steps) {
@@ -179,7 +170,7 @@ public class VideoFragment extends Fragment implements ExoPlayer.EventListener {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putLong(EXTRA_POSITION, mPosition);
-        outState.putInt(EXTRA_SELECTED_INDEX , mSelectedIndex);
+        outState.putInt(EXTRA_SELECTED_INDEX, mSelectedIndex);
     }
 
 //    public static boolean isVideoFile(String path) {
@@ -197,6 +188,7 @@ public class VideoFragment extends Fragment implements ExoPlayer.EventListener {
                 initializeVideoPlayer(mVideoUri);
             }
         }
+        updateButtonVisibillity();
     }
 
 

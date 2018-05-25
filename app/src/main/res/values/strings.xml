@@ -13,4 +13,6 @@
     <string name="selected_position">SELECTED_POSITION</string>
 
     <string name="menu_step">menu_step</string>
+    <string name="recipes">Recipes</string>
+    <string name="back_to_recipes">Back to recipes</string>
 </resources>

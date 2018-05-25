@@ -12,6 +12,7 @@
         android:background="@color/colorPrimary"
         android:gravity="center"/>
 
+
     <ListView
         android:background="@color/white"
         android:id="@+id/listview_widget"

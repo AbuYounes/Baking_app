@@ -54,9 +54,9 @@ public class RecipeActivity extends AppCompatActivity {
     }
 
     private static final String LOG_TAG = RecipeActivity.class.getName();
-    public static final String TAG_FRAGMENT = "FaridsRecipe";
 
-    Call<List<Recipe>> mRecipeCall;
+
+    private Call<List<Recipe>> mRecipeCall;
     private List<Recipe> mRecipes = new ArrayList<>();
     private RecipeMenuAdapter mAdapter;
     private RecyclerView mRecyclerViewRecipes;
@@ -66,9 +66,7 @@ public class RecipeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe);
-        Toolbar menuToolbar = findViewById(R.id.menu_toolbar);
-        setSupportActionBar(menuToolbar);
-        getSupportActionBar().setTitle(getString(R.string.menu_title));
+
         initViews();
 
         Log.d(LOG_TAG, "onCreateView executed");
@@ -89,15 +87,15 @@ public class RecipeActivity extends AppCompatActivity {
         getIdlingResource();
     }
 
-    private void initViews(){
+    private void initViews() {
+        Toolbar menuToolbar = findViewById(R.id.menu_toolbar);
+        setSupportActionBar(menuToolbar);
+        getSupportActionBar().setTitle(getString(R.string.menu_title));
 
         mRecyclerViewRecipes = findViewById(R.id.recyclerview_recipes);
-        mAdapter = new RecipeMenuAdapter(this, mRecipes);
-
 
         final int columns = getResources().getInteger(R.integer.recipe_columns);
         mRecyclerViewRecipes.setLayoutManager(new GridLayoutManager(this, columns));
-        //mRecyclerViewRecipes.setAdapter(mAdapter);
 
         swipeRefreshLayout = findViewById(R.id.main_content);
         swipeRefreshLayout.setRefreshing(true);
@@ -108,10 +106,9 @@ public class RecipeActivity extends AppCompatActivity {
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                initViews();
+                beforeRefreshing();
             }
         });
-        mAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -121,7 +118,7 @@ public class RecipeActivity extends AppCompatActivity {
 
     }
 
-    private void beforeRefreshing(){
+    private void beforeRefreshing() {
         mRecipes.clear();
         getRecipes();
     }
@@ -135,13 +132,13 @@ public class RecipeActivity extends AppCompatActivity {
             public void onResponse(Call<List<Recipe>> call, Response<List<Recipe>> response) {
                 if (response.isSuccessful()) {
                     mRecipes.addAll(response.body());
+                    mAdapter = new RecipeMenuAdapter(RecipeActivity.this, mRecipes);
                     mRecyclerViewRecipes.setAdapter(mAdapter);
+                    mAdapter.notifyDataSetChanged();
                     mRecyclerViewRecipes.smoothScrollToPosition(0);
                     if (swipeRefreshLayout.isRefreshing()) {
                         swipeRefreshLayout.setRefreshing(false);
                     }
-                    //Log.d(LOG_TAG, "" + mRecipes.addAll(response.body()));
-
                 } else {
                     CommonUtils apiError = CommonUtils.parseError(response);
                     Toast.makeText(RecipeActivity.this, apiError.getMessage(),
