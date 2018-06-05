@@ -10,7 +10,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -54,7 +53,7 @@ public class VideoFragment extends Fragment implements ExoPlayer.EventListener {
     private TextView mDescription;
     private ImageView mThumbnail;
 
-    public ImageButton backButton, forwardButton;
+    public ImageView backButton, forwardButton;
     private int mSelectedIndex;
     private ArrayList<Step> mSteps;
 

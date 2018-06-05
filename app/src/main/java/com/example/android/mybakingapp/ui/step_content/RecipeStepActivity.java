@@ -23,7 +23,7 @@ public class RecipeStepActivity extends AppCompatActivity implements StepFragmen
     public static final String TAG_FRAGMENT_STEP = "recipe step";
     public static final String RECIPE ="recipe";
     public boolean mTwoPane;
-    Recipe mRecipe;
+    private Recipe mRecipe;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

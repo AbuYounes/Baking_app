@@ -13,6 +13,7 @@ import java.util.List;
 public class IngredientActivity extends AppCompatActivity {
 
     List<Ingredient> mIngredientList;
+    String recipeName;
     private static final String TAG_FRAGMENT_INGREDIENT = "ingredient fragment";
 
     @Override
@@ -20,7 +21,8 @@ public class IngredientActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ingredient);
         mIngredientList = getIntent().getParcelableArrayListExtra(IngredientFragment.EXTRA_INGREDIENT);
-        IngredientFragment ingredientFragment = IngredientFragment.newInstance(mIngredientList);
+        recipeName = getIntent().getStringExtra("recipeName");
+        IngredientFragment ingredientFragment = IngredientFragment.newInstance(mIngredientList, recipeName);
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         if (fragmentManager.findFragmentByTag(TAG_FRAGMENT_INGREDIENT) == null) {

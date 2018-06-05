@@ -94,6 +94,7 @@ public class StepFragment extends Fragment {
             public void onClick(View view) {
                 Intent ingredientIntent = new Intent(getActivity(), IngredientActivity.class);
                 ingredientIntent.putParcelableArrayListExtra(IngredientFragment.EXTRA_INGREDIENT, (ArrayList<? extends Parcelable>) mRecipe.ingredients);
+                ingredientIntent.putExtra("recipeName", mRecipe.recipeName);
                 startActivity(ingredientIntent);
             }
         });

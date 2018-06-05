@@ -1,20 +1,32 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="#50000000">
 
 
     <Button
         android:id="@+id/back_button"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:text="Back to recipes"
-        android:background="@color/colorPrimary"
+        android:text="@string/back_to_recipes"
+        android:background="@color/colorPrimaryTransparent"
         android:gravity="center"/>
 
 
+
+    <TextView
+        android:id="@+id/recipeName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/blue"
+        android:gravity="center"
+        android:background="#80000000"
+        android:textSize="24sp" />
+
+
     <ListView
-        android:background="@color/white"
+        android:background="#20000000"
         android:id="@+id/listview_widget"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">

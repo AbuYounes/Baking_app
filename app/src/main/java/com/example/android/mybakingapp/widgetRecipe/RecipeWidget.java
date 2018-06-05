@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 import static com.example.android.mybakingapp.widgetRecipe.MyIngredientService.FROM_ACTIVITY_INGREDIENTS_LIST;
+import static com.example.android.mybakingapp.widgetRecipe.MyIngredientService.RECIPE_NAME_SERVICE_WIDGET;
 
 /**
  * Implementation of App Widget functionality.
@@ -24,6 +25,7 @@ import static com.example.android.mybakingapp.widgetRecipe.MyIngredientService.F
 public class RecipeWidget extends AppWidgetProvider {
 
     static ArrayList<String> ingredientsList = new ArrayList<>();
+    static String recipeName;
 
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
                                 int appWidgetId) {
@@ -35,14 +37,19 @@ public class RecipeWidget extends AppWidgetProvider {
         Intent intent = new Intent(context, ListViewService.class);
         views.setRemoteAdapter(R.id.listview_widget, intent);
 
-        // Create an Intent to launch ExampleActivity
+        // Create an Intent to launch RecipeActivity
         Intent showActiviyIntent = new Intent(context, RecipeActivity.class);
         showActiviyIntent.setAction(MyIngredientService.FROM_ACTIVITY_INGREDIENTS_LIST);
+        showActiviyIntent.setAction(MyIngredientService.RECIPE_NAME_SERVICE_WIDGET);
         showActiviyIntent.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, showActiviyIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         views.setOnClickPendingIntent(R.id.back_button, pendingIntent);
         //views.setPendingIntentTemplate(R.id.listview_widget, pendingIntent);
-
+        if(recipeName!=null) {
+            views.setTextViewText(R.id.recipeName, recipeName + ":");
+        }else{
+            views.setTextViewText(R.id.recipeName,  "Choose recipe first");
+        }
         appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.listview_widget);
 
         // Instruct the widget manager to update the widget
@@ -52,7 +59,7 @@ public class RecipeWidget extends AppWidgetProvider {
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
 
-        MyIngredientService.startIngredientService(context, ingredientsList);
+        MyIngredientService.startIngredientService(context, ingredientsList, recipeName);
         for (int appWidgetId : appWidgetIds) {
             appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.listview_widget);
         }
@@ -85,6 +92,7 @@ public class RecipeWidget extends AppWidgetProvider {
 
         if (action.equals("android.appwidget.action.APPWIDGET_UPDATE")) {
             ingredientsList = Objects.requireNonNull(intent.getExtras()).getStringArrayList(FROM_ACTIVITY_INGREDIENTS_LIST);
+            recipeName = Objects.requireNonNull(intent.getExtras()).getString(RECIPE_NAME_SERVICE_WIDGET);
             appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.listview_widget);
 
             RecipeWidget.updateBakingWidgets(context, appWidgetManager, appWidgetIds);

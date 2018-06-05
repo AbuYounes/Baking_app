@@ -21,6 +21,7 @@ public class IngredientFragment extends Fragment {
     private RecyclerView mRecyclerViewIngredients;
     private RecipeIngredientAdapter mAdapter;
     private List<Ingredient> mIngredients;
+    private String mRecipeName;
 
     public static final String EXTRA_INGREDIENT = "ingredients";
 
@@ -28,9 +29,10 @@ public class IngredientFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static IngredientFragment newInstance(List<Ingredient> ingredients) {
+    public static IngredientFragment newInstance(List<Ingredient> ingredients, String recipeName) {
         Bundle args = new Bundle();
         args.putParcelableArrayList(EXTRA_INGREDIENT, (ArrayList<Ingredient>) ingredients);
+        args.putString("recipeName", recipeName);
         IngredientFragment fragment = new IngredientFragment();
         fragment.setArguments(args);
         return fragment;
@@ -43,6 +45,7 @@ public class IngredientFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_ingredient, container, false);
 
         mIngredients = getArguments().getParcelableArrayList(EXTRA_INGREDIENT);
+        mRecipeName = getArguments().getString("recipeName");
         mRecyclerViewIngredients = rootView.findViewById(R.id.recyclerview_recipes_ingredientes);
         mAdapter = new RecipeIngredientAdapter(mIngredients, getActivity());
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getContext());
@@ -60,7 +63,7 @@ public class IngredientFragment extends Fragment {
             recipeIngredientForWidgets.add(ingredientName + "\n" + "Quantity: " + quantity + "\n" + "Measure: " + measure + "\n");
         }
 
-        MyIngredientService.startIngredientService(getActivity(), recipeIngredientForWidgets);
+        MyIngredientService.startIngredientService(getActivity(), recipeIngredientForWidgets, mRecipeName);
         // Inflate the layout for this fragment
         return rootView;
     }

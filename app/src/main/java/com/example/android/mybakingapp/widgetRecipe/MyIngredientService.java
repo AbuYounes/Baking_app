@@ -13,15 +13,17 @@ import java.util.Objects;
 public class MyIngredientService extends IntentService {
 
     public static String FROM_ACTIVITY_INGREDIENTS_LIST ="FROM_ACTIVITY_INGREDIENTS_LIST";
+    public static String RECIPE_NAME_SERVICE_WIDGET ="recipe_name_widget";
 
     public MyIngredientService() {
         super("MyIngredientService");
     }
 
-    public static void startIngredientService(Context context, ArrayList<String> fromActivityIngredientsList) {
+    public static void startIngredientService(Context context, ArrayList<String> fromActivityIngredientsList, String recipeName) {
 
         Intent intent = new Intent(context, MyIngredientService.class);
         intent.putExtra(FROM_ACTIVITY_INGREDIENTS_LIST, fromActivityIngredientsList);
+        intent.putExtra(RECIPE_NAME_SERVICE_WIDGET, recipeName);
         context.startService(intent);
     }
 
@@ -31,14 +33,16 @@ public class MyIngredientService extends IntentService {
     protected void onHandleIntent(Intent intent) {
         if (intent != null) {
                 ArrayList<String> fromActivityIngredientsList = Objects.requireNonNull(intent.getExtras()).getStringArrayList(FROM_ACTIVITY_INGREDIENTS_LIST);
-                handleActionShowIngredients(fromActivityIngredientsList);
+                String recipeName = Objects.requireNonNull(intent.getExtras()).getString(RECIPE_NAME_SERVICE_WIDGET);
+                handleActionShowIngredients(fromActivityIngredientsList, recipeName);
             }
     }
 
-    private void handleActionShowIngredients(ArrayList<String> fromActivityIngredientsList) {
+    private void handleActionShowIngredients(ArrayList<String> fromActivityIngredientsList, String recipeName) {
         Intent intent = new Intent("android.appwidget.action.APPWIDGET_UPDATE");
         intent.setAction("android.appwidget.action.APPWIDGET_UPDATE");
         intent.putExtra(FROM_ACTIVITY_INGREDIENTS_LIST,fromActivityIngredientsList);
+        intent.putExtra(RECIPE_NAME_SERVICE_WIDGET, recipeName);
         sendBroadcast(intent);
     }
 }

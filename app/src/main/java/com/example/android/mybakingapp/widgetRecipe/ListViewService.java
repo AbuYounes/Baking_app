@@ -58,8 +58,11 @@ public class ListViewService extends RemoteViewsService {
         public RemoteViews getViewAt(int position) {
             RemoteViews views = new RemoteViews(mContext.getPackageName(), R.layout.widget_recipe_list_item);
 
-            views.setTextViewText(R.id.ingredient_name_text_view, remoteViewIngredientList.get(position));
-
+            if(remoteViewIngredientList!=null) {
+                views.setTextViewText(R.id.ingredient_name_text_view, remoteViewIngredientList.get(position));
+            }else{
+                views.setTextViewText(R.id.ingredient_name_text_view, ".....");
+            }
             Intent fillInIntent = new Intent();
             views.setOnClickFillInIntent(R.id.ingredient_name_text_view, fillInIntent);
 

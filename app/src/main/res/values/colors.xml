@@ -4,8 +4,10 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
 
+    <color name="colorPrimaryTransparent">#953F51B5</color>
+    <color name="whiteTransparent">#80ffffff</color>
+
     <color name="white">#ffffff</color>
-    <color name="yellow">#efe415</color>
     <color name="blue">#00abea</color>
     <color name="cardview_shadow_start_color">#37000000</color>
     <color name="viewBackGround">#f1f5f8</color>
