@@ -100,44 +100,51 @@ public class VideoFragment extends Fragment implements ExoPlayer.EventListener {
         mDescription = rootView.findViewById(R.id.step_description_text_view);
         mThumbnail = rootView.findViewById(R.id.placeholder_no_video_image);
         mExoplayerView = rootView.findViewById(R.id.video_view_recipe);
+
         backButton = rootView.findViewById(R.id.btn_back);
         forwardButton = rootView.findViewById(R.id.btn_frw);
 
-        backButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                if (mSelectedIndex > 0) {
-                    mSelectedIndex--;
-                    if (mExoplayer != null) {
-                        mExoplayer.stop();
-                    }
-                    playVideo();
-                    updateButtonVisibillity();
-                }
-            }
-        });
+        if (backButton != null || forwardButton != null) {
 
-        forwardButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                if (mSelectedIndex < mSteps.size() - 1) {
-                    mSelectedIndex++;
-                    if (mExoplayer != null) {
-                        mExoplayer.stop();
+            backButton.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View view) {
+                    if (mSelectedIndex > 0) {
+                        mSelectedIndex--;
+                        if (mExoplayer != null) {
+                            mExoplayer.stop();
+                        }
+                        playVideo();
+                        updateButtonVisibillity();
                     }
-                    updateButtonVisibillity();
-                    playVideo();
                 }
-            }
-        });
+            });
+
+            forwardButton.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View view) {
+                    if (mSelectedIndex < mSteps.size() - 1) {
+                        mSelectedIndex++;
+                        if (mExoplayer != null) {
+                            mExoplayer.stop();
+                        }
+                        updateButtonVisibillity();
+                        playVideo();
+                    }
+                }
+            });
+        }
     }
 
+
     private void updateButtonVisibillity() {
-        if (mSelectedIndex == 0) {
-            backButton.setVisibility(View.GONE);
-        } else if (mSelectedIndex >= mSteps.size() - 1) {
-            forwardButton.setVisibility(View.GONE);
-        } else {
-            backButton.setVisibility(View.VISIBLE);
-            forwardButton.setVisibility(View.VISIBLE);
+        if (backButton != null || forwardButton != null) {
+            if (mSelectedIndex == 0) {
+                backButton.setVisibility(View.GONE);
+            } else if (mSelectedIndex >= mSteps.size() - 1) {
+                forwardButton.setVisibility(View.GONE);
+            } else {
+                backButton.setVisibility(View.VISIBLE);
+                forwardButton.setVisibility(View.VISIBLE);
+            }
         }
     }
 
