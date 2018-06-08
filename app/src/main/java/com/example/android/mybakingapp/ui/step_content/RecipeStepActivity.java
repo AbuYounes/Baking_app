@@ -16,22 +16,29 @@ import com.example.android.mybakingapp.ui.video_content.VideoFragment;
 
 import java.util.ArrayList;
 
-import static com.example.android.mybakingapp.ui.video_content.VideoFragment.POSITION_STEP;
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
+
+import static com.example.android.mybakingapp.util.Constants.EXTRA_STEPS;
+import static com.example.android.mybakingapp.util.Constants.POSITION_STEP;
+import static com.example.android.mybakingapp.util.Constants.TAG_FRAGMENT_STEP;
 
 public class RecipeStepActivity extends AppCompatActivity implements StepFragment.StepFragmentContract {
     private static final String LOG_TAG = RecipeStepActivity.class.getName();
-    public static final String TAG_FRAGMENT_STEP = "recipe step";
     public static final String RECIPE ="recipe";
     public boolean mTwoPane;
     private Recipe mRecipe;
+
+    @BindView(R.id.steps_toolbar)
+    Toolbar mMenuToolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe_step);
-
-        Toolbar menuToolbar = (Toolbar) findViewById(R.id.steps_toolbar);
-        setSupportActionBar(menuToolbar);
+        ButterKnife.bind(this);
+        setSupportActionBar(mMenuToolbar);
         getSupportActionBar().setTitle(getString(R.string.menu_title));
 
         FragmentManager manager = getSupportFragmentManager();
@@ -62,7 +69,7 @@ public class RecipeStepActivity extends AppCompatActivity implements StepFragmen
             getSupportFragmentManager().beginTransaction().replace(R.id.recipe_video, videoFragment).commit();
         } else {
             Intent intent = new Intent(this, RecipeVideoActivity.class);
-            intent.putExtra(VideoFragment.EXTRA_STEPS, (ArrayList<Step>) mRecipe.steps);
+            intent.putExtra(EXTRA_STEPS, (ArrayList<Step>) mRecipe.steps);
             intent.putExtra(POSITION_STEP, position);
             startActivity(intent);
         }

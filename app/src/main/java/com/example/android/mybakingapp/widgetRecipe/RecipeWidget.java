@@ -16,6 +16,7 @@ import com.example.android.mybakingapp.ui.recipe_content.RecipeActivity;
 import java.util.ArrayList;
 import java.util.Objects;
 
+import static com.example.android.mybakingapp.util.Constants.EXTRA_APPWIDGET_UPDATE;
 import static com.example.android.mybakingapp.widgetRecipe.MyIngredientService.FROM_ACTIVITY_INGREDIENTS_LIST;
 import static com.example.android.mybakingapp.widgetRecipe.MyIngredientService.RECIPE_NAME_SERVICE_WIDGET;
 
@@ -90,7 +91,7 @@ public class RecipeWidget extends AppWidgetProvider {
 
         final String action = intent.getAction();
 
-        if (action.equals("android.appwidget.action.APPWIDGET_UPDATE")) {
+        if (action.equals(EXTRA_APPWIDGET_UPDATE)) {
             ingredientsList = Objects.requireNonNull(intent.getExtras()).getStringArrayList(FROM_ACTIVITY_INGREDIENTS_LIST);
             recipeName = Objects.requireNonNull(intent.getExtras()).getString(RECIPE_NAME_SERVICE_WIDGET);
             appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.listview_widget);

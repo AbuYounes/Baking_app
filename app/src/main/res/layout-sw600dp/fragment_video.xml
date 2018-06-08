@@ -11,9 +11,10 @@
         android:id="@+id/video_view_recipe"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
         android:layout_marginEnd="4dp"
         android:layout_marginStart="4dp"
-        app:resize_mode="fit"/>
+        app:resize_mode="fit" />
 
     <ImageView
         android:id="@+id/placeholder_no_video_image"
@@ -26,36 +27,12 @@
     <TextView
         android:id="@+id/step_description_text_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="91dp"
         android:layout_marginEnd="10dp"
         android:layout_marginStart="10dp"
-        android:layout_marginTop="5dp"
+        android:gravity="center_horizontal"
+        android:layout_marginTop="48dp"
         android:textColor="@android:color/black"
         android:textSize="18sp"
         android:textStyle="bold" />
-
-    <!--<LinearLayout-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_weight="1"-->
-        <!--android:orientation="horizontal">-->
-
-        <!--<ImageView-->
-            <!--android:id="@+id/btn_back"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_marginLeft="16dp"-->
-            <!--app:srcCompat="@drawable/ic_arrow_back"-->
-            <!--/>-->
-
-        <!--<ImageView-->
-            <!--android:id="@+id/btn_frw"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_gravity="end"-->
-            <!--android:layout_marginRight="16dp"-->
-            <!--app:srcCompat="@drawable/ic_arrow_forward"-->
-            <!--/>-->
-    <!--</LinearLayout>-->
-
 </LinearLayout>

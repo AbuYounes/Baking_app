@@ -16,14 +16,16 @@ import com.example.android.mybakingapp.widgetRecipe.MyIngredientService;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
+import static com.example.android.mybakingapp.util.Constants.EXTRA_INGREDIENT;
+import static com.example.android.mybakingapp.util.Constants.EXTRA_RECIPE_NAME;
+
 public class IngredientFragment extends Fragment {
 
-    private RecyclerView mRecyclerViewIngredients;
-    private RecipeIngredientAdapter mAdapter;
-    private List<Ingredient> mIngredients;
-    private String mRecipeName;
-
-    public static final String EXTRA_INGREDIENT = "ingredients";
+    @BindView(R.id.recyclerview_recipes_ingredientes)
+    RecyclerView recyclerViewIngredients;
 
     public IngredientFragment() {
         // Required empty public constructor
@@ -32,7 +34,7 @@ public class IngredientFragment extends Fragment {
     public static IngredientFragment newInstance(List<Ingredient> ingredients, String recipeName) {
         Bundle args = new Bundle();
         args.putParcelableArrayList(EXTRA_INGREDIENT, (ArrayList<Ingredient>) ingredients);
-        args.putString("recipeName", recipeName);
+        args.putString(EXTRA_RECIPE_NAME, recipeName);
         IngredientFragment fragment = new IngredientFragment();
         fragment.setArguments(args);
         return fragment;
@@ -43,27 +45,30 @@ public class IngredientFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         View rootView = inflater.inflate(R.layout.fragment_ingredient, container, false);
+        ButterKnife.bind(this, rootView);
+        List<Ingredient> ingredients = getArguments().getParcelableArrayList(EXTRA_INGREDIENT);
+        String recipeName = getArguments().getString(EXTRA_RECIPE_NAME);
+        RecipeIngredientAdapter adapter = new RecipeIngredientAdapter(ingredients, getActivity());
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
+        recyclerViewIngredients.setLayoutManager(layoutManager);
+        recyclerViewIngredients.setAdapter(adapter);
 
-        mIngredients = getArguments().getParcelableArrayList(EXTRA_INGREDIENT);
-        mRecipeName = getArguments().getString("recipeName");
-        mRecyclerViewIngredients = rootView.findViewById(R.id.recyclerview_recipes_ingredientes);
-        mAdapter = new RecipeIngredientAdapter(mIngredients, getActivity());
-        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getContext());
-        mRecyclerViewIngredients.setLayoutManager(mLayoutManager);
-        mRecyclerViewIngredients.setAdapter(mAdapter);
+
+
 
         final ArrayList<String> recipeIngredientForWidgets = new ArrayList<>();
 
-        for (int i = 0; i < mIngredients.size(); i++) {
+        for (int i = 0; i < ingredients.size(); i++) {
 
-            String ingredientName = mIngredients.get(i).getIngredient();
-            float quantity = mIngredients.get(i).getQuantity();
-            String measure = mIngredients.get(i).getMeasure();
+            String ingredientName = ingredients.get(i).getIngredient();
+            float quantity = ingredients.get(i).getQuantity();
+            String measure = ingredients.get(i).getMeasure();
 
-            recipeIngredientForWidgets.add(ingredientName + "\n" + "Quantity: " + quantity + "\n" + "Measure: " + measure + "\n");
+            //recipeIngredientForWidgets.add(ingredientName + "\n" + "Quantity: " + quantity + "\n" + "Measure: " + measure + "\n");
+            recipeIngredientForWidgets.add(ingredientName + "\n" + quantity +" "+ measure + "\n");
         }
 
-        MyIngredientService.startIngredientService(getActivity(), recipeIngredientForWidgets, mRecipeName);
+        MyIngredientService.startIngredientService(getActivity(), recipeIngredientForWidgets, recipeName);
         // Inflate the layout for this fragment
         return rootView;
     }

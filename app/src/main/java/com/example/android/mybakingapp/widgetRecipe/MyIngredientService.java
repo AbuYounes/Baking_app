@@ -9,6 +9,8 @@ import android.support.annotation.RequiresApi;
 import java.util.ArrayList;
 import java.util.Objects;
 
+import static com.example.android.mybakingapp.util.Constants.EXTRA_APPWIDGET_UPDATE;
+
 
 public class MyIngredientService extends IntentService {
 
@@ -39,8 +41,8 @@ public class MyIngredientService extends IntentService {
     }
 
     private void handleActionShowIngredients(ArrayList<String> fromActivityIngredientsList, String recipeName) {
-        Intent intent = new Intent("android.appwidget.action.APPWIDGET_UPDATE");
-        intent.setAction("android.appwidget.action.APPWIDGET_UPDATE");
+        Intent intent = new Intent(EXTRA_APPWIDGET_UPDATE);
+        intent.setAction(EXTRA_APPWIDGET_UPDATE);
         intent.putExtra(FROM_ACTIVITY_INGREDIENTS_LIST,fromActivityIngredientsList);
         intent.putExtra(RECIPE_NAME_SERVICE_WIDGET, recipeName);
         sendBroadcast(intent);

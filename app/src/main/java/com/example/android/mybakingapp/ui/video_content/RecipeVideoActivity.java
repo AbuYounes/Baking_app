@@ -11,12 +11,13 @@ import com.example.android.mybakingapp.data.model.Step;
 
 import java.util.ArrayList;
 
+import static com.example.android.mybakingapp.util.Constants.EXTRA_STEPS;
+import static com.example.android.mybakingapp.util.Constants.POSITION_STEP;
+import static com.example.android.mybakingapp.util.Constants.TAG_FRAGMENT_VIDEO;
+
 public class RecipeVideoActivity extends AppCompatActivity {
     private static final String TAG = RecipeVideoActivity.class.getSimpleName();
-    public static final String TAG_FRAGMENT_VIDEO = "video fragment";
 
-    int mSelectedIndex;
-    ArrayList<Step> mSteps;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,9 +32,9 @@ public class RecipeVideoActivity extends AppCompatActivity {
         FragmentManager fragmentManager = getSupportFragmentManager();
         if (fragmentManager.findFragmentByTag(TAG_FRAGMENT_VIDEO) == null) {
             FragmentTransaction transaction = fragmentManager.beginTransaction();
-            mSteps = getIntent().getParcelableArrayListExtra(VideoFragment.EXTRA_STEPS);
-            mSelectedIndex = getIntent().getIntExtra(VideoFragment.POSITION_STEP, 0);
-            VideoFragment videoFragment = VideoFragment.newInstance(mSelectedIndex, mSteps);
+            ArrayList<Step> steps = getIntent().getParcelableArrayListExtra(EXTRA_STEPS);
+            int selectedIndex = getIntent().getIntExtra(POSITION_STEP, 0);
+            VideoFragment videoFragment = VideoFragment.newInstance(selectedIndex, steps);
             transaction.add(R.id.recipe_video, videoFragment, TAG_FRAGMENT_VIDEO);
             transaction.commit();
         }

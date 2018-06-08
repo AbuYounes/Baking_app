@@ -16,6 +16,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.example.android.mybakingapp.ItemClickSupport;
+import com.example.android.mybakingapp.MyApplication;
 import com.example.android.mybakingapp.R;
 import com.example.android.mybakingapp.adapter.RecipeMenuAdapter;
 import com.example.android.mybakingapp.data.RecipesIdlingResources;
@@ -23,11 +24,14 @@ import com.example.android.mybakingapp.data.model.Recipe;
 import com.example.android.mybakingapp.ui.step_content.RecipeStepActivity;
 import com.example.android.mybakingapp.util.Client;
 import com.example.android.mybakingapp.util.CommonUtils;
+import com.example.android.mybakingapp.util.ConnectivityReceiver;
 import com.example.android.mybakingapp.util.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -35,7 +39,7 @@ import retrofit2.Response;
 import static com.example.android.mybakingapp.ui.step_content.RecipeStepActivity.RECIPE;
 
 
-public class RecipeActivity extends AppCompatActivity {
+public class RecipeActivity extends AppCompatActivity  implements ConnectivityReceiver.ConnectivityReceiverListener{
 
 
     @Nullable
@@ -59,27 +63,41 @@ public class RecipeActivity extends AppCompatActivity {
     private Call<List<Recipe>> mRecipeCall;
     private List<Recipe> mRecipes = new ArrayList<>();
     private RecipeMenuAdapter mAdapter;
-    private RecyclerView mRecyclerViewRecipes;
-    private SwipeRefreshLayout swipeRefreshLayout;
+    boolean mIsConnected;
+
+
+    @BindView(R.id.menu_toolbar)
+    Toolbar mMenuToolbar;
+    @BindView(R.id.recyclerview_recipes)
+    RecyclerView mRecyclerViewRecipes;
+    @BindView(R.id.main_content)
+    SwipeRefreshLayout mSwipeRefreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe);
-
+        ButterKnife.bind(this);
         initViews();
 
+
         Log.d(LOG_TAG, "onCreateView executed");
-        ItemClickSupport.addTo(mRecyclerViewRecipes).setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
-            @Override
-            public void onItemClicked(RecyclerView recyclerView, int position, View v) {
-                Recipe clickedDataItem = mRecipes.get(position);
-                Intent intent = new Intent(RecipeActivity.this, RecipeStepActivity.class);
-                intent.putExtra(RECIPE, clickedDataItem);
-                Toast.makeText(v.getContext(), "You clicked " + clickedDataItem.recipeName, Toast.LENGTH_SHORT).show();
-                startActivity(intent);
-            }
-        });
+
+
+                ItemClickSupport.addTo(mRecyclerViewRecipes).setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
+                    @Override
+                    public void onItemClicked(RecyclerView recyclerView, int position, View v) {
+                            Recipe clickedDataItem = mRecipes.get(position);
+                            Intent intent = new Intent(RecipeActivity.this, RecipeStepActivity.class);
+                            intent.putExtra(RECIPE, clickedDataItem);
+                            checkConnection();
+                            if(mIsConnected) {
+                                startActivity(intent);
+                            }
+                        }
+                });
+
+
 
         Log.d(LOG_TAG, "onCreate executed");
 
@@ -88,22 +106,18 @@ public class RecipeActivity extends AppCompatActivity {
     }
 
     private void initViews() {
-        Toolbar menuToolbar = findViewById(R.id.menu_toolbar);
-        setSupportActionBar(menuToolbar);
+        setSupportActionBar(mMenuToolbar);
         getSupportActionBar().setTitle(getString(R.string.menu_title));
-
-        mRecyclerViewRecipes = findViewById(R.id.recyclerview_recipes);
 
         final int columns = getResources().getInteger(R.integer.recipe_columns);
         mRecyclerViewRecipes.setLayoutManager(new GridLayoutManager(this, columns));
 
-        swipeRefreshLayout = findViewById(R.id.main_content);
-        swipeRefreshLayout.setRefreshing(true);
-        if (swipeRefreshLayout.isRefreshing()) {
-            swipeRefreshLayout.setRefreshing(false);
+        mSwipeRefreshLayout.setRefreshing(true);
+        if (mSwipeRefreshLayout.isRefreshing()) {
+            mSwipeRefreshLayout.setRefreshing(false);
         }
-        swipeRefreshLayout.setColorSchemeResources(android.R.color.darker_gray);
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+        mSwipeRefreshLayout.setColorSchemeResources(android.R.color.darker_gray);
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 beforeRefreshing();
@@ -115,6 +129,7 @@ public class RecipeActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         beforeRefreshing();
+        MyApplication.getInstance().setConnectivityListener(this);
 
     }
 
@@ -136,24 +151,41 @@ public class RecipeActivity extends AppCompatActivity {
                     mRecyclerViewRecipes.setAdapter(mAdapter);
                     mAdapter.notifyDataSetChanged();
                     mRecyclerViewRecipes.smoothScrollToPosition(0);
-                    if (swipeRefreshLayout.isRefreshing()) {
-                        swipeRefreshLayout.setRefreshing(false);
+                    if (mSwipeRefreshLayout.isRefreshing()) {
+                        mSwipeRefreshLayout.setRefreshing(false);
                     }
                 } else {
                     CommonUtils apiError = CommonUtils.parseError(response);
                     Toast.makeText(RecipeActivity.this, apiError.getMessage(),
                             Toast.LENGTH_SHORT).show();
-                    swipeRefreshLayout.setRefreshing(false);
+                    mSwipeRefreshLayout.setRefreshing(false);
                 }
             }
 
             @Override
             public void onFailure(Call<List<Recipe>> call, Throwable t) {
                 Log.d("Error", t.getMessage());
+                checkConnection();
+                mSwipeRefreshLayout.setRefreshing(false);
             }
         });
 
     }
+
+    private void checkConnection() {
+        mIsConnected = ConnectivityReceiver.isConnected();
+        showToast(mIsConnected);
+    }
+
+    private void showToast(boolean isConnected) {
+        if (isConnected) {
+
+        } else {
+            Toast.makeText(this, "There is no INTERNET connection", Toast.LENGTH_SHORT).show();
+
+        }
+    }
+
 
 
     @Override
@@ -162,5 +194,10 @@ public class RecipeActivity extends AppCompatActivity {
         if (mRecipeCall != null) {
             mRecipeCall.cancel();
         }
+    }
+
+    @Override
+    public void onNetworkConnectionChanged(boolean isConnected) {
+        showToast(isConnected);
     }
 }

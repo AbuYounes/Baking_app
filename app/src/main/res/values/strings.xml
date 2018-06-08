@@ -1,6 +1,7 @@
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="app_name">MyBakingApp</string>
     <string name="menu_title">Menu</string>
+
     <string name="appwidget_text">EXAMPLE</string>
     <string name="add_widget">Add widget</string>
     <string name="ingredients">Ingredients</string>
@@ -15,4 +16,5 @@
     <string name="menu_step">menu_step</string>
     <string name="recipes">Recipes</string>
     <string name="back_to_recipes">Back to recipes</string>
+
 </resources>

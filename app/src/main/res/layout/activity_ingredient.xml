@@ -3,7 +3,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="com.example.android.mybakingapp.ui.ingredient_content.IngredientActivity">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/menu_toolbar_ingredient"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/colorPrimary"
+        app:title="Ingredients"
+        app:titleMarginStart="16dp"
+
+        android:theme="@style/ToolbarTheme">
+
+    </android.support.v7.widget.Toolbar>
 
     <FrameLayout
         android:layout_width="match_parent"

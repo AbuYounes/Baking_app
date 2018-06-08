@@ -19,9 +19,15 @@ import com.example.android.mybakingapp.R;
 import com.example.android.mybakingapp.adapter.RecipeStepAdapter;
 import com.example.android.mybakingapp.data.model.Recipe;
 import com.example.android.mybakingapp.ui.ingredient_content.IngredientActivity;
-import com.example.android.mybakingapp.ui.ingredient_content.IngredientFragment;
 
 import java.util.ArrayList;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
+import static com.example.android.mybakingapp.util.Constants.EXTRA_INGREDIENT;
+import static com.example.android.mybakingapp.util.Constants.EXTRA_RECIPE;
+import static com.example.android.mybakingapp.util.Constants.EXTRA_RECIPE_NAME;
 
 
 public class StepFragment extends Fragment {
@@ -29,12 +35,14 @@ public class StepFragment extends Fragment {
         void onStepSelected(int position);
     }
 
-    public static final String EXTRA_RECIPE = "extra_recipe";
+
     private static final String LOG_TAG = StepFragment.class.getName();
-    private RecyclerView mRecyclerViewSteps;
-    private RecipeStepAdapter mAdapter;
-    Recipe mRecipe;
-    private CardView mCardView;
+    private Recipe mRecipe;
+
+    @BindView(R.id.recyclerview_recipes_steps)
+    RecyclerView mRecyclerViewSteps;
+    @BindView(R.id.card_view_3)
+    CardView mCardView;
 
     public StepFragment() {
 
@@ -78,23 +86,20 @@ public class StepFragment extends Fragment {
         Log.d(LOG_TAG, "oncreateview Stepfragment");
 
         View rootView = inflater.inflate(R.layout.fragment_step, container, false);
+        ButterKnife.bind(this, rootView);
 
-
-        mRecyclerViewSteps = rootView.findViewById(R.id.recyclerview_recipes_steps);
-        mAdapter = new RecipeStepAdapter(getActivity(), mRecipe.steps);
+        RecipeStepAdapter adapter = new RecipeStepAdapter(getActivity(), mRecipe.steps);
 
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getContext());
         mRecyclerViewSteps.setLayoutManager(mLayoutManager);
-        mRecyclerViewSteps.setAdapter(mAdapter);
-
-        mCardView = rootView.findViewById(R.id.card_view_3);
+        mRecyclerViewSteps.setAdapter(adapter);
 
         mCardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent ingredientIntent = new Intent(getActivity(), IngredientActivity.class);
-                ingredientIntent.putParcelableArrayListExtra(IngredientFragment.EXTRA_INGREDIENT, (ArrayList<? extends Parcelable>) mRecipe.ingredients);
-                ingredientIntent.putExtra("recipeName", mRecipe.recipeName);
+                ingredientIntent.putParcelableArrayListExtra(EXTRA_INGREDIENT, (ArrayList<? extends Parcelable>) mRecipe.ingredients);
+                ingredientIntent.putExtra(EXTRA_RECIPE_NAME, mRecipe.recipeName);
                 startActivity(ingredientIntent);
             }
         });

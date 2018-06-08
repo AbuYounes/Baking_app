@@ -10,7 +10,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.example.android.mybakingapp.ItemClickSupport;
 import com.example.android.mybakingapp.R;
@@ -21,19 +20,22 @@ import com.example.android.mybakingapp.ui.step_content.RecipeStepActivity;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import retrofit2.Call;
 
 import static com.example.android.mybakingapp.ui.step_content.RecipeStepActivity.RECIPE;
+import static com.example.android.mybakingapp.util.Constants.EXTRA_RECIPES;
 
 public class RecipeFragment extends Fragment {
 
     private static final String LOG_TAG = RecipeFragment.class.getName();
-    private static final String EXTRA_RECIPES = "extra recipe";
     private List<Recipe> mRecipes = new ArrayList<>();
-    private RecipeMenuAdapter mAdapter;
-    private RecyclerView mRecyclerViewRecipes;
-    Call<List<Recipe>> mRecipeCall;
 
+    private Call<List<Recipe>> mRecipeCall;
+
+    @BindView(R.id.recyclerview_recipes)
+    RecyclerView mRecyclerViewRecipes;
     public RecipeFragment() {
     }
 
@@ -50,16 +52,15 @@ public class RecipeFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_recipe, container, false);
-
+        ButterKnife.bind(this, rootView);
         mRecipes = getArguments().getParcelableArrayList(EXTRA_RECIPES);
-        mRecyclerViewRecipes = rootView.findViewById(R.id.recyclerview_recipes);
-        mAdapter = new RecipeMenuAdapter(getContext(), mRecipes);
+        RecipeMenuAdapter adapter = new RecipeMenuAdapter(getContext(), mRecipes);
 
 
         final int columns = getResources().getInteger(R.integer.recipe_columns);
         mRecyclerViewRecipes.setLayoutManager(new GridLayoutManager(getActivity(), columns));
-        mRecyclerViewRecipes.setAdapter(mAdapter);
-        mAdapter.notifyDataSetChanged();
+        mRecyclerViewRecipes.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
 
         Log.d(LOG_TAG, "onCreateView executed");
         ItemClickSupport.addTo(mRecyclerViewRecipes).setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
@@ -68,7 +69,7 @@ public class RecipeFragment extends Fragment {
                 Recipe clickedDataItem = mRecipes.get(position);
                 Intent intent = new Intent(getActivity(), RecipeStepActivity.class);
                 intent.putExtra(RECIPE, clickedDataItem);
-                Toast.makeText(v.getContext(), "You clicked " + clickedDataItem.recipeName, Toast.LENGTH_SHORT).show();
+                //Toast.makeText(v.getContext(), "You clicked " + clickedDataItem.recipeName, Toast.LENGTH_SHORT).show();
                 startActivity(intent);
             }
         });

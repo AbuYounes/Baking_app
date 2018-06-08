@@ -36,30 +36,47 @@ import com.google.android.exoplayer2.util.Util;
 
 import java.util.ArrayList;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
+import static com.example.android.mybakingapp.util.Constants.EXTRA_POSITION;
+import static com.example.android.mybakingapp.util.Constants.EXTRA_SELECTED_INDEX;
+import static com.example.android.mybakingapp.util.Constants.EXTRA_STEPS;
+import static com.example.android.mybakingapp.util.Constants.POSITION_STEP;
+
 
 public class VideoFragment extends Fragment implements ExoPlayer.EventListener {
 
     private static final String TAG = VideoFragment.class.getSimpleName();
-    public static final String POSITION_STEP = "position_string";
-    public static final String EXTRA_STEPS = "extra_steps";
-    private static final String EXTRA_SELECTED_INDEX = "selected_index";
-    private static final String EXTRA_POSITION = "position";
+
 
     private SimpleExoPlayer mExoplayer;
     private MediaSessionCompat mMediaSession;
     private PlaybackStateCompat.Builder mStateBuilder;
 
-    private SimpleExoPlayerView mExoplayerView;
-    private TextView mDescription;
-    private ImageView mThumbnail;
-
-    public ImageView backButton, forwardButton;
     private int mSelectedIndex;
     private ArrayList<Step> mSteps;
+
 
     private Uri mVideoUri;
     private long mPosition;
     private Step mStep;
+
+    @BindView(R.id.step_description_text_view)
+    TextView mDescription;
+
+    @BindView(R.id.placeholder_no_video_image)
+    ImageView mThumbnail;
+
+    @BindView(R.id.video_view_recipe)
+    SimpleExoPlayerView mExoplayerView;
+
+    @BindView(R.id.btn_back)
+    ImageView backButton;
+
+    @BindView(R.id.btn_frw)
+    ImageView forwardButton;
+
 
     public VideoFragment() {
         // Required empty public constructor
@@ -79,7 +96,7 @@ public class VideoFragment extends Fragment implements ExoPlayer.EventListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_video, container, false);
-
+        ButterKnife.bind(this, rootView);
         if (savedInstanceState != null) {
             mSelectedIndex = savedInstanceState.getInt(EXTRA_SELECTED_INDEX);
             mPosition = savedInstanceState.getLong(EXTRA_POSITION);
@@ -97,12 +114,6 @@ public class VideoFragment extends Fragment implements ExoPlayer.EventListener {
     }
 
     private void initViews(View rootView) {
-        mDescription = rootView.findViewById(R.id.step_description_text_view);
-        mThumbnail = rootView.findViewById(R.id.placeholder_no_video_image);
-        mExoplayerView = rootView.findViewById(R.id.video_view_recipe);
-
-        backButton = rootView.findViewById(R.id.btn_back);
-        forwardButton = rootView.findViewById(R.id.btn_frw);
 
         if (backButton != null || forwardButton != null) {
 
@@ -178,11 +189,6 @@ public class VideoFragment extends Fragment implements ExoPlayer.EventListener {
         outState.putLong(EXTRA_POSITION, mPosition);
         outState.putInt(EXTRA_SELECTED_INDEX, mSelectedIndex);
     }
-
-//    public static boolean isVideoFile(String path) {
-//        String mimeType = URLConnection.guessContentTypeFromName(path);
-//        return mimeType != null && mimeType.startsWith("video");
-//    }
 
     @Override
     public void onResume() {
@@ -303,7 +309,7 @@ public class VideoFragment extends Fragment implements ExoPlayer.EventListener {
 
     @Override
     public void onPlayerError(ExoPlaybackException error) {
-        Toast.makeText(getActivity(), error.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+        Toast.makeText(getActivity(), "Check your connection", Toast.LENGTH_SHORT).show();
     }
 
     @Override
