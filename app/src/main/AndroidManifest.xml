@@ -15,15 +15,21 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
         <activity android:name=".ui.recipe_content.RecipeActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.video_content.RecipeVideoActivity" />
-        <activity android:name=".ui.step_content.RecipeStepActivity" />
+
+        <activity android:name=".ui.video_content.RecipeVideoActivity"
+            android:parentActivityName=".ui.step_content.RecipeStepActivity">
+        </activity>
+
+        <activity android:name=".ui.step_content.RecipeStepActivity"
+            android:parentActivityName=".ui.recipe_content.RecipeActivity"
+            android:launchMode="singleTop"/>
 
         <receiver android:name=".widgetRecipe.RecipeWidget">
             <intent-filter>
@@ -41,7 +47,8 @@
             </intent-filter>
         </receiver>
 
-        <activity android:name=".ui.ingredient_content.IngredientActivity" />
+        <activity android:name=".ui.ingredient_content.IngredientActivity"
+            android:parentActivityName=".ui.step_content.RecipeStepActivity"/>
 
         <service
             android:name=".widgetRecipe.MyIngredientService"

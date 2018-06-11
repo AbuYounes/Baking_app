@@ -15,4 +15,5 @@ public class Constants {
     public static final String EXTRA_STEPS = "extra_steps";
     public static final String EXTRA_SELECTED_INDEX = "selected_index";
     public static final String EXTRA_POSITION = "position";
+    public static final String KEY_PLAY_WHEN_READY = "play_when_ready";
 }

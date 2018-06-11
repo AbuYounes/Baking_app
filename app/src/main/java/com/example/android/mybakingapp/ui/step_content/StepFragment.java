@@ -80,6 +80,7 @@ public class StepFragment extends Fragment {
         mRecipe = getArguments().getParcelable(EXTRA_RECIPE);
     }
 
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {

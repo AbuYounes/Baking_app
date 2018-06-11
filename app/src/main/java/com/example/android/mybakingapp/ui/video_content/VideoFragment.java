@@ -33,8 +33,11 @@ import com.google.android.exoplayer2.trackselection.TrackSelector;
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+
+import javax.annotation.Nullable;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -42,6 +45,7 @@ import butterknife.ButterKnife;
 import static com.example.android.mybakingapp.util.Constants.EXTRA_POSITION;
 import static com.example.android.mybakingapp.util.Constants.EXTRA_SELECTED_INDEX;
 import static com.example.android.mybakingapp.util.Constants.EXTRA_STEPS;
+import static com.example.android.mybakingapp.util.Constants.KEY_PLAY_WHEN_READY;
 import static com.example.android.mybakingapp.util.Constants.POSITION_STEP;
 
 
@@ -60,6 +64,7 @@ public class VideoFragment extends Fragment implements ExoPlayer.EventListener {
 
     private Uri mVideoUri;
     private long mPosition;
+    boolean playWhenReady;
     private Step mStep;
 
     @BindView(R.id.step_description_text_view)
@@ -71,11 +76,13 @@ public class VideoFragment extends Fragment implements ExoPlayer.EventListener {
     @BindView(R.id.video_view_recipe)
     SimpleExoPlayerView mExoplayerView;
 
-    @BindView(R.id.btn_back)
+    @Nullable @BindView(R.id.btn_back)
     ImageView backButton;
 
-    @BindView(R.id.btn_frw)
+    @Nullable @BindView(R.id.btn_frw)
     ImageView forwardButton;
+
+    //private ImageView backButton, forwardButton;
 
 
     public VideoFragment() {
@@ -100,6 +107,7 @@ public class VideoFragment extends Fragment implements ExoPlayer.EventListener {
         if (savedInstanceState != null) {
             mSelectedIndex = savedInstanceState.getInt(EXTRA_SELECTED_INDEX);
             mPosition = savedInstanceState.getLong(EXTRA_POSITION);
+            playWhenReady = savedInstanceState.getBoolean(KEY_PLAY_WHEN_READY);
         } else {
             mSelectedIndex = getArguments().getInt(POSITION_STEP);
         }
@@ -114,6 +122,9 @@ public class VideoFragment extends Fragment implements ExoPlayer.EventListener {
     }
 
     private void initViews(View rootView) {
+
+//        backButton = rootView.findViewById(R.id.btn_back);
+//        forwardButton = rootView.findViewById(R.id.btn_frw);
 
         if (backButton != null || forwardButton != null) {
 
@@ -166,16 +177,21 @@ public class VideoFragment extends Fragment implements ExoPlayer.EventListener {
     private void playVideo() {
         mStep = mSteps.get(mSelectedIndex);
         String videoUrl = mStep.getVideoURL();
-        if (TextUtils.isEmpty(videoUrl)) {
+        String imageUrl=mStep.getThumbnailURL();
+        if (TextUtils.isEmpty(videoUrl) && imageUrl.endsWith("mp4")) {
             videoUrl = mStep.getThumbnailURL();
         }
+
         mVideoUri = Uri.parse(mStep.getVideoURL());
         mDescription.setText(mStep.getDescription());
 
         if (TextUtils.isEmpty(videoUrl) && videoUrl.equals("")) {
+            Uri builtUri = Uri.parse(imageUrl).buildUpon().build();
+            Picasso.with(getContext()).load(builtUri).placeholder(R.drawable.baking_silhouette).into(mThumbnail);
             mThumbnail.setVisibility(View.VISIBLE);
-            mThumbnail.setImageResource(R.drawable.no_video);
+            mDescription.setVisibility(View.VISIBLE);
             mExoplayerView.setVisibility(View.GONE);
+
         } else {
             mThumbnail.setVisibility(View.GONE);
             mExoplayerView.setVisibility(View.VISIBLE);
@@ -188,6 +204,7 @@ public class VideoFragment extends Fragment implements ExoPlayer.EventListener {
         super.onSaveInstanceState(outState);
         outState.putLong(EXTRA_POSITION, mPosition);
         outState.putInt(EXTRA_SELECTED_INDEX, mSelectedIndex);
+        outState.putBoolean(KEY_PLAY_WHEN_READY, playWhenReady);
     }
 
     @Override
@@ -196,8 +213,11 @@ public class VideoFragment extends Fragment implements ExoPlayer.EventListener {
         if (mVideoUri != null) {
             if (mExoplayer != null) {
                 mExoplayer.seekTo(mPosition);
+                mExoplayer.setPlayWhenReady(playWhenReady);
             } else {
                 initializeVideoPlayer(mVideoUri);
+                mExoplayer.seekTo(mPosition);
+                mExoplayer.setPlayWhenReady(playWhenReady);
             }
         }
         updateButtonVisibillity();
@@ -209,9 +229,11 @@ public class VideoFragment extends Fragment implements ExoPlayer.EventListener {
         super.onPause();
         if (mExoplayer != null) {
             mPosition = mExoplayer.getCurrentPosition();
+            playWhenReady = mExoplayer.getPlayWhenReady();
             Log.e(TAG, "get current position : " + mPosition);
         }
         releasePlayer();
+
 
     }
 
@@ -247,6 +269,7 @@ public class VideoFragment extends Fragment implements ExoPlayer.EventListener {
             public void onSkipToPrevious() {
                 mExoplayer.seekTo(0);
             }
+
         });
         mMediaSession.setActive(true);
     }
@@ -316,4 +339,5 @@ public class VideoFragment extends Fragment implements ExoPlayer.EventListener {
     public void onPositionDiscontinuity() {
 
     }
+
 }

@@ -39,7 +39,7 @@ import retrofit2.Response;
 import static com.example.android.mybakingapp.ui.step_content.RecipeStepActivity.RECIPE;
 
 
-public class RecipeActivity extends AppCompatActivity  implements ConnectivityReceiver.ConnectivityReceiverListener{
+public class RecipeActivity extends AppCompatActivity  implements ConnectivityReceiver.ConnectivityReceiverListener, Delayer.DelayerCallback{
 
 
     @Nullable
@@ -78,7 +78,7 @@ public class RecipeActivity extends AppCompatActivity  implements ConnectivityRe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe);
         ButterKnife.bind(this);
-        initViews();
+
 
 
         Log.d(LOG_TAG, "onCreateView executed");
@@ -103,6 +103,12 @@ public class RecipeActivity extends AppCompatActivity  implements ConnectivityRe
 
 
         getIdlingResource();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Delayer.processDelay(this, RecipeActivity.this, mIdlingResource);
     }
 
     private void initViews() {
@@ -199,5 +205,10 @@ public class RecipeActivity extends AppCompatActivity  implements ConnectivityRe
     @Override
     public void onNetworkConnectionChanged(boolean isConnected) {
         showToast(isConnected);
+    }
+
+    @Override
+    public void onDone(List<Recipe> recipes) {
+        initViews();
     }
 }

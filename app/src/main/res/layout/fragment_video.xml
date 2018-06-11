@@ -4,19 +4,22 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:weightSum="2"
     tools:context="com.example.android.mybakingapp.ui.video_content.RecipeVideoActivity">
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        android:layout_weight="1">
 
         <com.google.android.exoplayer2.ui.SimpleExoPlayerView
             android:id="@+id/video_view_recipe"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="4dp"
-            android:layout_marginStart="4dp"
-            android:layout_marginTop="8dp" />
+            android:layout_marginEnd="1dp"
+            android:layout_marginStart="1dp"
+            android:layout_marginTop="1dp" />
 
         <ImageView
             android:id="@+id/placeholder_no_video_image"
@@ -24,8 +27,13 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp" />
 
-    </RelativeLayout>
+    </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        android:layout_weight="1">
     <TextView
         android:id="@+id/step_description_text_view"
         android:layout_width="match_parent"
@@ -39,34 +47,37 @@
         android:textSize="18sp"
         android:textStyle="bold" />
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp">
-
-        <ImageView
-            android:id="@+id/btn_back"
-            android:layout_width="wrap_content"
+        <RelativeLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:layout_gravity="start"
-            android:layout_marginStart="24dp"
-            app:srcCompat="@drawable/ic_arrow_back"
-            android:layout_alignParentLeft="true"
-            android:layout_marginLeft="24dp" />
+            android:layout_marginBottom="4dp">
 
-        <ImageView
-            android:id="@+id/btn_frw"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentTop="true"
-            android:layout_gravity="end"
-            android:layout_marginEnd="24dp"
-            app:srcCompat="@drawable/ic_arrow_forward"
-            android:layout_alignParentRight="true"
-            android:layout_marginRight="24dp" />
-    </RelativeLayout>
+            <ImageView
+                android:id="@+id/btn_back"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentBottom="true"
+                android:layout_gravity="start"
+                android:layout_marginLeft="24dp"
+                android:layout_marginStart="24dp"
 
+                app:srcCompat="@drawable/ic_arrow_back" />
+
+            <ImageView
+                android:id="@+id/btn_frw"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentBottom="true"
+                android:layout_gravity="end"
+                android:layout_marginEnd="24dp"
+                android:layout_marginRight="24dp"
+
+                app:srcCompat="@drawable/ic_arrow_forward" />
+        </RelativeLayout>
+
+    </LinearLayout>
 </LinearLayout>

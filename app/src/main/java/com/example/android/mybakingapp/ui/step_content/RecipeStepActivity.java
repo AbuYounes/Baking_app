@@ -4,9 +4,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MenuItem;
 
 import com.example.android.mybakingapp.R;
 import com.example.android.mybakingapp.data.model.Recipe;
@@ -18,7 +20,6 @@ import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-
 
 import static com.example.android.mybakingapp.util.Constants.EXTRA_STEPS;
 import static com.example.android.mybakingapp.util.Constants.POSITION_STEP;
@@ -40,6 +41,9 @@ public class RecipeStepActivity extends AppCompatActivity implements StepFragmen
         ButterKnife.bind(this);
         setSupportActionBar(mMenuToolbar);
         getSupportActionBar().setTitle(getString(R.string.menu_title));
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
 
         FragmentManager manager = getSupportFragmentManager();
         mRecipe = getIntent().getParcelableExtra(RECIPE);
@@ -74,4 +78,16 @@ public class RecipeStepActivity extends AppCompatActivity implements StepFragmen
             startActivity(intent);
         }
     }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // User clicked on a menu option in the app bar overflow menu
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                NavUtils.navigateUpFromSameTask(this);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
 }

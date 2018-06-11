@@ -1,12 +1,16 @@
 package com.example.android.mybakingapp;
 
 
+import android.support.test.espresso.Espresso;
+import android.support.test.espresso.IdlingResource;
 import android.support.test.espresso.contrib.RecyclerViewActions;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 
 import com.example.android.mybakingapp.ui.recipe_content.RecipeActivity;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,6 +25,14 @@ import static android.support.test.espresso.matcher.ViewMatchers.withId;
 public class RecipeActivityBasicTest {
     @Rule public ActivityTestRule<RecipeActivity> mActivityTestRule =
             new ActivityTestRule<>(RecipeActivity.class);
+
+    private IdlingResource idlingResource;
+
+    @Before
+    public void registerIdlingResource() {
+        idlingResource = mActivityTestRule.getActivity().getIdlingResource();
+        Espresso.registerIdlingResources(idlingResource);
+    }
 
     @Test
     public void onRecipeListActivityOpen_displayRecyclerView(){
@@ -39,5 +51,12 @@ public class RecipeActivityBasicTest {
         onView(withId(R.id.ingredient))
                 .check(matches(isDisplayed()));
 
+    }
+
+    @After
+    public void unregisterIdlingResource() {
+        if (idlingResource != null) {
+            Espresso.unregisterIdlingResources(idlingResource);
+        }
     }
 }
